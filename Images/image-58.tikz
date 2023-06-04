@@ -1,0 +1,44 @@
+\begin{tikzpicture}
+	\begin{pgfonlayer}{nodelayer}
+		\node [style=none] (0) at (0, 0) {};
+		\node [style=none] (1) at (2, 0) {};
+		\node [style=none] (2) at (0, -2) {};
+		\node [style=none] (3) at (2, -2) {};
+		\node [style=none] (4) at (4, 0) {};
+		\node [style=none] (5) at (6, 0) {};
+		\node [style=none] (6) at (4, -2) {};
+		\node [style=none] (7) at (6, -2) {};
+		\node [style=none] (8) at (1, -2) {};
+		\node [style=none] (9) at (5, -2) {};
+		\node [style=none] (18) at (4, -8) {};
+		\node [style=none] (19) at (2, -10) {};
+		\node [style=none] (21) at (3, -7.75) {};
+		\node [style=none] (44) at (2, -8) {};
+		\node [style=none] (45) at (4, -10) {};
+		\node [style=none] (83) at (1, -1) {\texttt{r1}};
+		\node [style=none] (84) at (5, -1) {\texttt{r2}};
+		\node [style=none] (85) at (3, -9) {\texttt{r3}};
+		\node [style=none] (119) at (3, -11.25) {\texttt{add r3, r1, r2}};
+		\node [style=white, minimum size=20pt, fill={rgb,255: red,240; green,240; blue,240}] (120) at (3, -4.5) {\(+\)};
+	\end{pgfonlayer}
+	\begin{pgfonlayer}{edgelayer}
+		\draw [style=light fill] (2.center)
+			 to (3.center)
+			 to (1.center)
+			 to (0.center)
+			 to cycle;
+		\draw [style=light fill] (6.center)
+			 to (7.center)
+			 to (5.center)
+			 to (4.center)
+			 to cycle;
+		\draw [style=light fill] (18.center)
+			 to (44.center)
+			 to (19.center)
+			 to (45.center)
+			 to cycle;
+		\draw [style=big arrow] (9.center) to (120);
+		\draw [style=big arrow] (8.center) to (120);
+		\draw [style=big arrow] (120) to (21.center);
+	\end{pgfonlayer}
+\end{tikzpicture}

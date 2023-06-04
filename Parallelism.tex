@@ -1,0 +1,241 @@
+\section{Multithreading and Multiprocessors}
+The motivation why during the ages we changed from a singlethread to multithread paradign are for improve the general througput and not the single operation efficency
+\subsubsection{Parallel Programming}
+
+Explicit parallelism implies structuring the applications into concurrent and communicating tasks.
+Operating systems offer systems to implement such features: \textbf{threads} and \textbf{processes}.
+
+The multitasking is implemented differently based on the characteristics of the \textit{CPU}:
+
+\begin{itemize}
+  \item \textbf{Single} core
+  \item \textbf{Single} core with \textbf{multithreading} support
+  \item \textbf{Multi} core
+\end{itemize}
+
+In multithreading, multiple threads share the function units of one processor via overlapping.
+The processor must duplicate the independent state of each thread:
+
+\begin{itemize}
+  \item Separate copy of the \textbf{register files}
+  \item Separate \textbf{\texttt{PC}}
+  \item Separate\textbf{ page table}
+\end{itemize}
+
+\begin{figure}[htbp]
+  \bigskip
+  \centering
+  \tikzfig{image-3.tikz}
+  \caption{Multiplicity of processes and threads}
+  \label{fig:multiplicity-of-processes-and-threads}
+  \bigskip
+\end{figure}
+
+The memory is shared via the virtual memory mechanisms, which already support multi processes.
+Finally, the hardware must be ready for a fast thread switch: it must be faster than a full process switch \textit{(which is in the order of hundreds to thousands of clocks)}.
+
+There are \(2\) apparent solutions:
+
+\begin{enumerate}
+  \item \textbf{Fine grained} multi-threading
+        \begin{itemize}
+          \item Switches from one thread to another at each instruction by \textbf{taking turns}
+                \begin{itemize}
+                  \item the switch happens when one thread stalls
+                \end{itemize}
+          \item The executions of more threads is \textbf{interleaved}
+          \item The \textit{CPU} must be able to change thread at \textbf{every clock cycle}
+          \item For \(n\) processes, each gets \(\sfrac{1}{n}\) of \textit{CPU} time
+                \begin{itemize}
+                  \item \(n\) times the original resources are needed
+                \end{itemize}
+        \end{itemize}
+  \item \textbf{Coarse grained} multithreading
+        \begin{itemize}
+          \item Switching from one thread to another occurs only when there are long \textbf{stalls} in the active process
+          \item The interested threads \textbf{share many resources}
+          \item The switching from one thread to the other requires \textbf{different clock cycles} to save the context
+        \end{itemize}
+\end{enumerate}
+
+\bigskip
+
+\textbf{Disadvantages} of multithreading:
+\begin{itemize}[label=\xmarkthin]
+  \item For short stalls it \textbf{does not reduce the throughput loss}
+  \item The \textit{CPU} starts the execution of instructions that belongs to a \textbf{single thread}
+  \item When there is one stall it is necessary to \textbf{empty the pipeline} before starting the new thread
+\end{itemize}
+
+\textbf{Advantages} of multithreading:
+\begin{itemize}[label=\cmarkthin]
+  \item In normal conditions \textbf{the single thread is not slowed down}
+\end{itemize}
+
+\begin{figure}[htbp]
+  \bigskip
+  \centering
+  \tikzfig[1]{image-4.tikz}
+  \caption{\centering Comparison between fine and coarse multithreading. Each column shows the evolution of \(2\) different processes spread on \(4\) different threads over a set amount of time.
+    A filled square illustrates a thread occupied by a process, while the empty ones represent an empty \texttt{(idle)} thread.}
+  \label{fig:multithreading-fine-coarse-comparison}
+  \bigskip
+\end{figure}
+
+\paragraph{Thread Level Parallelism - \textit{TLP}}
+
+\begin{itemize}
+  \item \textbf{Thread level parallelism}, simultaneous multithreading
+        \begin{itemize}
+          \item Uses the resources of \textbf{one superscalar processor} to exploit simultaneously \textit{ILP} and \textit{TLP}
+          \item A \textit{CPU} today has \textbf{more functional resources} than what one thread can in fact use
+          \item Simultaneously \textbf{schedule instructions} for execution from all threads
+        \end{itemize}
+  \item A \textit{CPU} that can handle these needs must be built
+        \begin{itemize}
+          \item A \textbf{large set of registers} is needed, allowing multiple processes to operate on different data on the same registers
+          \item \textbf{Mapping table for registers} is needed in order to tell each process where to write data
+          \item Each processor can manage a \textbf{set amount of threads}
+        \end{itemize}
+  \item This is the most \textbf{flexible} way to manage multithreading but it requires more \textbf{complex hardware}
+\end{itemize}
+\bigskip
+
+Comparison between many multithreading paradigms is shown in Figure~\ref{fig:multithreading-comparison}.
+
+\begin{figure}[htbp]
+  \bigskip
+  \centering
+  \tikzfig[0.85]{image-5.tikz}
+  \caption{\centering Multithreading comparison. Each column shows the evolution of \(5\) different processes spread on \(4\) different threads over a set amount of time.
+    A filled square illustrates a thread occupied by a process, while the empty ones represent an empty \texttt{(idle)} thread.}
+  \label{fig:multithreading-comparison}
+  \bigskip
+\end{figure}
+
+\subsubsection{Further improvements}
+
+It's difficult to increase the performance and clock frequency of the single core.
+The longest pipeline stage can be split into multiple smaller stages, allowing higher throughput.
+
+This concept is called \textbf{deep pipeline} and has a few drawbacks:
+
+\begin{itemize}
+  \item \textbf{Heat dissipation} problems due to the increased number of components
+  \item More stages imply \textbf{more faults} since sequential instructions are likely related
+  \item \textbf{Transmissions delay} in wires start to get relevant
+  \item \textbf{Harder design} and verifications by the hardware developers
+\end{itemize}
+
+\subsection{Parallel Architectures}
+
+A \textbf{parallel computer} is a collection of processing elements that cooperate and communicate to solve large problems rapidly.
+
+The aim is to replicate processors to add performance and not design a single faster processor.
+The parallel architecture extends traditional computer architecture with a communication architecture.
+This solution needs:
+
+\begin{itemize}
+  \item \textbf{Abstractions} for HW/SW interface
+  \item \textbf{Different structures} to realize abstractions easily
+\end{itemize}
+
+Refer to Flynn Taxonomy \textit{(Section~\ref{sec:flynn-taxonomy})} for more details about these architectures.
+
+\subsection{\textit{SIMD} architecture}
+
+The characteristics of the \textit{SIMD} architectures \textit{(Single Instruction Multiple Data)} are:
+
+\begin{itemize}
+  \item \textbf{Same instruction} executed by \textbf{multiple processors} using different data streams
+  \item Each processor has its data memory
+  \item \textbf{Single instruction memory} and \textbf{single control processor} to fetch and dispatch instructions
+  \item Processors are typically \textbf{special purpose}
+  \item A \textbf{simple} programming model
+\end{itemize}
+
+The programming model features synchronized units with a single program counter, while each unit has its own addressing registers to use different data addresses.
+
+\bigskip
+Motivations for \textit{SIMD}:
+
+\begin{itemize}
+  \item The \textbf{cost} of the control unit is \textbf{shared} between all execution units
+  \item Only\textbf{ one copy of the code} in execution is necessary
+  \item All the computation is \textbf{fully synchronized}
+\end{itemize}
+
+In real life:
+
+\begin{itemize}
+  \item \textit{SIMD} architectures are a \textbf{mix} of \textit{SISD} and \textit{SIMD}
+  \item A host computer executes \textbf{sequential operations}
+  \item \textit{SIMD} instructions sent to all the execution units
+        \begin{itemize}
+          \item each of them has its own memory and registers
+          \item an interconnection network is needed to exchange data
+        \end{itemize}
+\end{itemize}
+
+\bigskip
+\textit{SIMD} architectures will be explored in depth in Section~\ref{sec:simd}.
+
+\begin{figure}[htbp]
+  \bigskip
+  \centering
+  \tikzfig[1]{image-6.tikz}
+  \caption{\textit{SIMD} architecture}
+  \label{fig:simd-architecture}
+  \bigskip
+\end{figure}
+
+\subsection{\textit{MIMD} architecture}
+
+\textit{MIMD} architectures are flexible as they can function as:
+
+\begin{itemize}
+  \item \textbf{Single user} machines for high performance on one application
+  \item Multi programmed multiprocessors running many tasks \textbf{simultaneously}
+  \item Some combinations of the two aforementioned functions
+\end{itemize}
+
+They can also be built starting from standard CPUs.
+
+\bigskip
+Each processor fetches its own instructions and operates on its own data;
+processors are often off-the-shelf microprocessors, with the upside of being able to build a scalable architecture and having a high cost-performance ratio.
+
+In order to fully exploit a \textit{MIMD} with \(n\) processors, there must be:
+
+\begin{itemize}
+  \item At least \(n\) \textbf{threads} or \textbf{processes}  to execute
+        \begin{itemize}
+          \item those independent threads are typically identified by the programmer or created by the compiler
+        \end{itemize}
+  \item \textbf{Thread level parallelism} - \textit{TLP}
+        \begin{itemize}
+          \item parallelism is identified by the software \textit{(and not by hardware like in superscalar CPUs)}
+        \end{itemize}
+\end{itemize}
+
+\textit{MIMD} machines can be characterized in \(2\) classes, depending on the number of processors involved:
+
+\begin{itemize}
+  \item \textbf{Centralized} shared-memory architectures
+        \begin{itemize}
+          \item At most a few dozen processors chips \textit{(less than \(100\) cores)}
+          \item Large caches, single memory multiple banks
+          \item This kind of structures is often \textbf{symmetric multiprocessors (SMP)} and the style of architecture is called \textbf{Uniform Memory Access (UMA)}
+        \end{itemize}
+  \item \textbf{Distributed} memory architectures
+        \begin{itemize}
+          \item Supports \textbf{large processor count}
+          \item Requires \textbf{high bandwidth} interconnection
+          \item It has the disadvantage of a high volume of data communication between processors
+        \end{itemize}
+\end{itemize}
+
+\bigskip
+\textit{MIMD} architectures will be explored in depth in Section~\ref{sec:mimd}.
+
+\clearpage
